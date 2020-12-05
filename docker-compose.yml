@@ -1,0 +1,43 @@
+#    command: bash -c 'python start.py 9004'
+#certbt cree les keys il fo que nginx les recupere donc partager un -v entre nginx et certbot
+# tty open 
+#        command: bash -c 'python start.py'
+#sioserver    command: bash -c "npm install && npm start"
+#django cmd=>    command: bash -c "gunicorn django.wsgi --bind=0.0.0.0:8001 --reload"
+#    command: bash -c 'npm start'
+
+
+version: "3"
+services:
+  express:
+    build:
+      dockerfile: Dockerfile
+      context: ./node_project
+    container_name: express
+    hostname: express
+    user: root
+    volumes:
+      - ./node_project:/node_project
+    ports:
+      - "80:3000"
+    networks:
+      - backend
+  db:
+    image: postgres
+    container_name: db
+    restart: always
+    hostname: db
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+    volumes:
+      - ./config/postgres:/docker-entrypoint-initdb.d
+      - ./config/postgres/data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - backend
+networks:
+  backend:
