@@ -15,7 +15,9 @@ services:
       context: ./node_project
     container_name: express
     hostname: express
-    user: root
+    working_dir: /node_project/app
+    stdin_open: true
+    tty: true
     volumes:
       - ./node_project:/node_project
     ports:

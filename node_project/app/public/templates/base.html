@@ -1,0 +1,345 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Finder</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" >
+<meta name="csrf-token" content="{{csrfToken}}">
+<meta name="defaultOptions" content="{{defaultOptions}}">
+<meta name="materialsOpt" content="{{materialsOpt}}">
+
+<!-- Load required Bootstrap and BootstrapVue CSS -->
+<link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+<link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+
+
+<!-- Load required Bootstrap and BootstrapVue CSS -->
+<link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+<link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+
+<!-- Load polyfills to support older browsers -->
+<script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver" crossorigin="anonymous"></script>
+
+<!-- Load Vue followed by BootstrapVue -->
+<script src="//unpkg.com/vue@latest/dist/vue.min.js"></script>
+<script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
+
+<!-- Load the following for BootstrapVueIcons support -->
+<script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js"></script>
+
+ <!-- Load axios js file -->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+
+
+</head>
+<body>
+<div id="app" class="container-fluid" style="font-family:'Courier New', Courier, 'Liberation Mono', monospace;'">
+
+    <div class="row mt-3">
+        <h1 class="mx-auto">EVE echoes planetary production finder</h1>
+    </div>
+    
+    <div class="row">
+        <div class="col-xl-6">
+            <label class="mb-0" for="location">Location</label>
+            <b-input-group class="mt-0">
+                <template #append>
+                    <b-input-group-text @click="searchInit">
+                        <strong class="text-danger">
+                            <b-icon-x></b-icon>
+                        </strong>
+                    </b-input-group-text>
+                </template>
+                <template #prepend>
+
+                          <b-dropdown :text="searchOpt" variant="secondary">
+        <b-dropdown-item @click="getlistOpt('system')">system</b-dropdown-item>
+        <b-dropdown-item 
+        @click="getlistOpt('constellation')">constellation</b-dropdown-item>
+        <b-dropdown-item 
+        @click="getlistOpt('region')">region</b-dropdown-item>
+      </b-dropdown>
+                </template>
+                <b-form-input id="location" list="options" v-model="location" v-on:delete="getSystem" v-on:keyup="getSystem" ></b-form-input>
+                <datalist id="options" >
+                    <option v-for="option in options" v-if="searchOpt=='system'">
+                        <span>${ option.region} > ${ option.constellation} > ${ option.name}</span>
+                    </option>
+                    <option v-for="option in options" v-if="searchOpt=='constellation'">
+                        <span>${ option.region} > ${ option.constellation}</span>
+                    </option>
+                    <option v-for="option in options" v-if="searchOpt=='region'">
+                        <span>${ option.region}</span>
+                    </option>
+                </datalist>
+            </b-input-group>
+
+
+        </div>
+
+        <div class="col-xl-3">
+            <template >
+              <div>
+                <label for="sb-jumps">Jumps</label>
+                <b-form-spinbutton
+                  id="sb-jumps"
+                  v-model="jumps"
+                  min="3"
+                  max="20"
+                  step="1"
+                ></b-form-spinbutton>
+              </div>
+            </template>
+        </div>
+
+        <div class="col-xl-3">
+            <template >
+              <div>
+                <label for="sb-step">Security level</label>
+                <b-form-spinbutton
+                  id="sb-step"
+                  v-model="securityLevel"
+                  min="-1"
+                  max="1"
+                  step="0.1"
+                ></b-form-spinbutton>
+              </div>
+            </template>
+        </div>
+    </div>
+
+
+
+    <div class="row mx-3 my-3">
+        <div class="col-4-xl" style="width: 40vw;">
+            <template>
+              <div>
+                <b-form-select v-model="materialsSelected" :options="materialsOpt" multiple select-size="10"></b-form-select>
+
+            </template>
+            <!--template>
+              <div>
+                <b-form-select v-model="materialsSelected" :options="materialsOpt" multiple >
+                </b-form-select>
+                </div>
+            </template-->
+        </div>
+        <div class="col-7-xl mx-3" style="width: 40vw;">
+            <span class="mx-1 my-1" v-for="tag in tags">
+                <b-badge class="px-2 my-2 py-2">${tag}</b-badge>
+            </span>
+        </div>  
+    </div>
+
+    <div class="row mt-3">
+        <b-button  @click="find" variant="outline-secondary" class="mx-auto col-xl-6">Find</b-button>
+    </div>
+
+        <div class="row mt-3">
+
+            <b-list-group>
+              <b-list-group-item v-for="inf in info" :variant="getVariant(inf.richness)" v-if="searchOpt=='system'">${inf.resource} - ${inf.richness}: ${inf.jumps} ${inf.jumps>1&&'jumps'||'jump'} :  ${inf.region}-${inf.constellation}- ${inf.system} - ${inf.security}
+              </b-list-group-item>
+              <b-list-group-item v-for="inf in info" :variant="getVariant(inf.richness)" v-if="searchOpt=='constellation'">${inf.resource} - ${inf.richness}: ${inf.region}-${inf.constellation}- ${inf.system} - ${inf.security}
+              </b-list-group-item>
+              <b-list-group-item v-for="inf in info" :variant="getVariant(inf.richness)" v-if="searchOpt=='region'">${inf.resource} - ${inf.richness}: ${inf.region}-${inf.constellation}- ${inf.system} - ${inf.security}
+              </b-list-group-item>
+            </b-list-group>
+
+        </div>
+</div>
+
+
+<script>
+
+var app = new Vue({
+  delimiters: ['${', '}'],
+  el: '#app',
+  data: {
+    //domain:"https://peaceful-waters-24226.herokuapp.com",
+    domain:"http://127.0.0.1:80",
+    location:'',
+    system:'',
+    info:null,
+    options:[],
+    securityLevel:0.5,
+    jumps:5,
+    searchOpt:"system",
+    materialsSelected:[],
+    materialsOpt:JSON.parse(document.querySelector('meta[name="materialsOpt"]').getAttribute('content')),
+    defaultOptions:JSON.parse(document.querySelector('meta[name="defaultOptions"]').getAttribute('content'))
+  },
+  mounted:function(){
+    console.log('mounted');
+    var self = this;
+    this.options = this.defaultOptions;
+ 
+  },
+  computed: {
+    tags:function(){
+        var ret=[]
+        for (let i=0;i<this.materialsSelected.length;i++){
+            ret.push(this.materialsOpt[this.materialsSelected[i]].text)
+        }
+        console.log(ret)
+        return ret
+    },
+    locationTag:function(){
+        var ret;
+        switch (this.searchOpt) {
+          case "system":
+            ret = this.location.region+' > '+this.location.constellation+' > '+this.location.system;
+            break;
+          case "constellation":
+            ret = this.location.region+' > '+this.location.constellation;
+            break;
+          case "region":
+            ret = this.location.region;
+            break;
+          default:
+            ret = this.location.region+' > '+this.location.constellation+' > '+this.location.system;
+        }
+        return ret;
+    },
+  },
+  methods:{
+    searchInit:function(code){
+        console.log('in search init')
+        this.location='';
+    },
+    getlistOpt:function(listOptType){
+        this.location='';
+        this.searchOpt=listOptType;
+
+        /*var self = this;
+
+        var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        var data={data:listOptType};
+
+        axios({
+            method: 'post',
+            url: self.domain+"/list-opt",
+            contentType: 'application/json',
+
+          headers: {
+            'CSRF-Token': token // <-- is the csrf token as a header
+          },
+            data: data ,
+        })
+        .then(function (response) {
+            console.log('ajax response')
+            console.log(response.data)
+            self.searchOpt=listOptType
+            self.options = response.data
+          })
+        .catch(function (erreur) {
+            console.log(erreur);
+        });*/          
+    },
+    getVariant:function(code){
+        var variant;
+        console.log(code)
+        switch (code) {
+          case 'Poor':
+            variant = 'dark';
+            break;
+          case 'Medium':
+            variant = 'light';
+            break;
+          case 'Rich':
+            variant = 'warning';
+            break;
+          case 'Perfect':
+            variant = 'success';
+            break;
+          default:
+            variant = 'light';
+        }
+        console.log(variant)
+        return variant;
+    },
+    getSystem:function(event){
+
+        var self = this;
+        var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        var data={data:this.location,opt:this.searchOpt};
+        console.log('axios')
+        axios({
+            method: 'post',
+            url: self.domain+"/systems-list",
+            contentType: 'application/json',
+
+          headers: {
+            'CSRF-Token': token // <-- is the csrf token as a header
+          },
+            data: data ,
+        })
+        .then(function (response) {
+            console.log('ajax response')
+            console.log(response.data)
+            self.options = response.data
+          })
+        .catch(function (erreur) {
+            console.log(erreur);
+        });   
+
+    },
+    getLocation:function(){
+        var ret;
+        var self = this;
+        switch (this.searchOpt) {
+          case "system":
+            ret = (this.location.split('>')[2]).trim();
+            break;
+          case "constellation":
+            ret = (this.location.split('>')[1]).trim();
+            break;
+          case "region":
+            ret = self.location;
+            break;
+          default:
+            ret = ''
+        }
+        return ret;
+
+    },
+    find:function(){
+        console.log('find')
+        var self = this;
+        this.info=null;
+        console.log(this.getLocation());
+        var data = {
+            searchOpt:this.searchOpt,
+            location:this.getLocation(),
+            materials:this.materialsSelected,
+            jumps:this.jumps,
+            securityLevel:this.securityLevel,
+            }
+        var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        this.info=null
+        console.log('he man ! you need a spinner, dont you?')
+        axios({
+            method: 'post',
+            url: self.domain+"/materials",
+            contentType: 'application/json',
+              credentials: 'same-origin', // <-- includes cookies in the request
+          headers: {
+            'CSRF-Token': token, // <-- is the csrf token as a header
+            "Access-Control-Allow-Origin":"same-origin"
+          },
+            data: data ,
+        })
+        .then(function (response) {
+            console.log('get answer')
+            console.log(response.data)
+            self.info = response.data
+          })
+        .catch(function (erreur) {
+            console.log(erreur);
+        });       
+    },
+  }
+});
+</script>
+</body>
+</html>

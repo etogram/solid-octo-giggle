@@ -1,30 +1,45 @@
 const express = require('express')
+const favicon = require('serve-favicon')
+const path = require('path')
+const mustacheExpress = require('mustache-express');
+const bodyParser = require('body-parser').json()
+const cookieParser = require('cookie-parser');
+
+const logger = require('./utils/log').logger;
+const initDB = require('./utils/init').initDB;
+
+
+//express app
 const app = express()
 const port = 3000
 
-const getLocaleDate = function(date){
-  var options = { year: 'numeric', month: 'numeric', day: 'numeric' };
-  d = new Date(date);
-  return d.toLocaleDateString('fr', options)
-};
+// db initialization
+initDB();
 
-const getLocaleTime = function(date){
-  d = new Date(date);
-  return d.toLocaleTimeString('fr')            
-}
+//mustache
+app.engine('html', mustacheExpress());
+app.set('view engine', 'html');
+app.set('views', __dirname + '/public/templates');
 
-const displayDate = function(date){
-  return getLocaleDate(date)+'~'+getLocaleTime(date)
-}
+//bodyparser
+app.use(bodyParser) // for parsing application/json
 
-console.log(displayDate(new Date()))
+// parse cookies
+// we need this because "cookie" is true in csrfProtection
+app.use(cookieParser())
 
-app.get('/', (req, res) => {
-    var now = displayDate(new Date());
-  res.send('Hello World!<br>'+now)
-})
+//favicon
+app.use(favicon(path.join(__dirname, 'public','img', 'favicon.ico')))
 
+//middlewares
+app.use(logger);
+
+//routes
+//app.use('/system/:name', system);
+const mountRoutes = require('./routes')
+mountRoutes(app)
+
+//srv
 app.listen(port, () => {
-    console.log('yop')
-  console.log(`Example app listening at http://localhost:${port}`)
+  console.log(`app listening at http://localhost:${port}`)
 })
