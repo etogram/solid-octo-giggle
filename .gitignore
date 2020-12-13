@@ -1,6 +1,9 @@
 # Admin
 admin
 
+#env
+.env
+
 # Logs
 logs
 *.log

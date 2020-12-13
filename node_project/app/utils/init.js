@@ -2,6 +2,19 @@
 const console_log = require('./log').console_log
 const sql = require('./sql')
 
+/*
+ne pas oublier de rajouter ca a l init pour l instant
+alter table planets add richness_order numeric;
+
+UPDATE planets
+SET richness_order =  case
+    when richness = 'Perfect' then 1
+    when richness = 'Rich' then 0.75
+    when richness = 'Medium' then 0.5
+    when richness = 'Poor' then 0.25
+  end ;
+
+*/
 
 const initDB =  async function(){
     console_log('cyan','drop tables systems and planets');
