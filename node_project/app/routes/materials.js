@@ -38,7 +38,7 @@ var getSystemsResults =async function (location,jumps,security,materials){
 var sql = 'SELECT system_id from systems where name=%L'  
 var query = format(sql,location)  
 var res = await db.query(query,[])
-var system_id = [res.rows[0].system_id]
+var system_id = res.rows[0].system_id
 var results;
 
 //jump=0
@@ -55,19 +55,23 @@ var res = await db.query(query,[]);
 results = res.rows;
 //jump>0
 var systemList=[system_id];
+
 for (let i=1;i<=jumps;i++){
+    console.log('jump ='+i)
     var sql ='SELECT system_id \
     FROM   systems \
-    WHERE ARRAY[%L]::integer[] <@ systems.neighbors AND systems.security>%L::real \
+    WHERE ARRAY[%L]::integer[] && systems.neighbors AND systems.security>%L::real \
     GROUP BY system_id;'
     var query = format(sql,systemList,security);
-    systemList=[];
+    
 
     var res = await db.query(query,[]);
+    systemList=[];
     res.rows.forEach(function(e){        
      systemList.push(e.system_id)   
     })
-    systemList = Array.from(new Set(systemList))
+    //systemList = Array.from(new Set(systemList))
+    console.log(systemList)
 
 if (materials.length==0){
     var query = format(systemJumpSqlAll,i,systemList,security);  

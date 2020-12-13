@@ -62,7 +62,7 @@ const systemJumpSqlAll ='SELECT DISTINCT ON (planets.resource) \
            %L as jumps \
     FROM   planets \
     INNER JOIN systems ON planets.system_id=systems.system_id \
-    WHERE ARRAY[%L]::integer[] <@ systems.neighbors AND systems.security>%L::real \
+    WHERE ARRAY[%L]::integer[] && systems.neighbors AND systems.security>%L::real \
     ORDER  BY planets.resource, planets.richness_order DESC NULLS FIRST;'
 
 const systemJumpSql ='SELECT DISTINCT ON (planets.resource) \
@@ -72,7 +72,7 @@ const systemJumpSql ='SELECT DISTINCT ON (planets.resource) \
            %L as jumps \
     FROM   planets \
     INNER JOIN systems ON planets.system_id=systems.system_id \
-    WHERE ARRAY[%L]::integer[] <@ systems.neighbors AND systems.security>%L::real and resource in (%L) \
+    WHERE ARRAY[%L]::integer[] && systems.neighbors AND systems.security>%L::real and resource in (%L) \
     ORDER  BY planets.resource, planets.richness_order DESC NULLS FIRST;'
 
 const regionSql='SELECT DISTINCT ON (planets.resource) \
