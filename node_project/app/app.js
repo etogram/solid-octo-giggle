@@ -74,7 +74,11 @@ app.use(Sentry.Handlers.tracingHandler());
 app.use(Sentry.Handlers.errorHandler());
 //socket
 var http = require('http').createServer(app);
-var io = require('socket.io')(http);
+var io = require('socket.io')(http, {
+  cors: {
+    origin: '*',
+  }
+});;
 
 const autocomplete = require('./ioevents/autocomplete').autocomplete;
 const getResults = require('./ioevents/find').getResults;
