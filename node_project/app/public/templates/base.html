@@ -37,15 +37,9 @@
 <body>
 
 <div id="app" class="container-fluid" style="font-family:'Courier New', Courier, 'Liberation Mono', monospace;'">
-   
 
     <div class="row mt-3">
-        <p class="mx-auto">to do  3.nginx 4.lets encrypt et 5.find a domain et apres 6. on monte un swarm</p>
-    </div>
-
-
-    <div class="row mt-3">
-        <h1 class="mx-auto">EVE echoes planetary production finder</h1>
+        <h1 class="mx-auto font-responsive-vw">EVE echoes planetary production finder</h1>
     </div>
     
     <div class="row">
@@ -111,7 +105,7 @@ Vue.component('tags', {
     //
   },
   template: '<div>\
-        <b-button variant="outline-secondary"  size="sm" class="my-1 mx-1 px-1 py-0" v-for="tag in tags" :data-value="tag.value"  @click="toggle" style="font-size: smaller;">${tag.text}</b-button>\
+        <b-button variant="outline-secondary" size="sm" class="my-1 mx-1 px-1 py-0" v-for="tag in tags" :data-value="tag.value"  @click="toggle" style="font-size: smaller;">${tag.text}</b-button>\
 </div>',
   mounted:function(){
   },
@@ -120,9 +114,14 @@ Vue.component('tags', {
       if (event.target.className.indexOf("active")==-1){
         this.select.push(event.target.dataset.value)
         event.target.classList.add("active");
+        event.target.classList.remove("btn-outline-secondary");
+        event.target.classList.add("btn-outline-primary");
         this.$emit('update-tags',this.select.sort(function(a, b) {return parseInt(a) - parseInt(b);}));
       }else{
         event.target.classList.remove("active");
+        event.target.classList.add("btn-outline-secondary");
+        event.target.classList.remove("btn-outline-primary");
+        
         var index = this.select.indexOf(event.target.dataset.value);
         if (index > -1) {
           this.select.splice(index, 1);
@@ -374,5 +373,44 @@ var app = new Vue({
   }
 });
 </script>
+<style>
+/*font-responsive-vw*/
+/*xs*/
+.font-responsive-vw
+{
+font-size: 1em;
+font-weight: bold;
+}
+
+/*sm*/
+@media screen and (min-width: 576px) { 
+  .font-responsive-vw{
+font-size: 1em;
+font-weight: bold;
+  }
+  }
+
+/*md*/
+@media screen and (min-width: 768px) { 
+  .font-responsive-vw{
+font-size: 2em;
+  }
+  }
+
+/*lg*/
+@media screen and (min-width: 992px) { 
+  .font-responsive-vw{
+font-size: 2em;
+  }
+  }
+/*xl*/
+@media screen and (min-width: 1200px)
+{
+  .font-responsive-vw{
+font-size: 3em;
+  }
+  }
+
+</style>
 </body>
 </html>
