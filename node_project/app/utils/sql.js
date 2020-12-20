@@ -1,3 +1,5 @@
+const logger = require('./logger').logger;
+
 const db = require('../core/db')
 const data = require('../data/src').data.data
 
@@ -6,13 +8,13 @@ const count = async function(){
     try{   
         row = await db.query('SELECT count(*) FROM systems', [], (err, res) => {
             if (err) {
-              console.log(err)
+              logger.info(err)
             }
-            console.log(row.rows[0].count)
+            logger.info(row.rows[0].count)
         })
         nrow = row.rows[0].count;
     }
-    catch(error){console.log(error);nrow=-1}
+    catch(error){logger.info(error);nrow=-1}
     return nrow;
 }
 const countMaterials = async function(){
@@ -20,13 +22,13 @@ const countMaterials = async function(){
     try{   
         row = await db.query('SELECT count(*) FROM planets', [], (err, res) => {
             if (err) {
-              console.log(err)
+              logger.info(err)
             }
-            console.log(row.rows[0].count)
+            logger.info(row.rows[0].count)
         })
         nrow = row.rows[0].count;
     }
-    catch(error){console.log(error);nrow=-1}
+    catch(error){logger.info(error);nrow=-1}
     return nrow;
 }
 const dump = async function(){
@@ -51,7 +53,7 @@ const create = async function(){
     try{
         await db.query(syntax, [], (err, res) => {
             if (err) {
-              console.log(err)
+              logger.info(err)
             }
             return res
         })}
@@ -75,7 +77,7 @@ console.log(data.length)
         try{
             await db.query(syntax, [system_id,region,constellation,name,security,neighbors], (err, res) => {
                 if (err) {
-                  console.log(err)
+                  logger.info(err)
                 }
                 return res
             })}
@@ -92,18 +94,18 @@ console.log(data.length)
                 try{
                     await db.query(syntax, [system_id,planetName,planetType,planetMat[j][0],planetMat[j][1],planetMat[j][2],planetMat[j][3]], (err, res) => {
                         if (err) {
-                          console.log(err)
+                          logger.info(err)
                         }
                         return res
                     })}
                 catch(error){return error}
-        console.log('data loading : '+Math.round(i/data.length*100)+'%');
+        logger.info('data loading : '+Math.round(i/data.length*100)+'%');
 
             }
 
         }
     }
-    console.log(count)
+    logger.info(count)
 }
 
 

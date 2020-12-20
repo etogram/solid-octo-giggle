@@ -1,5 +1,5 @@
 
-const console_log = require('./log').console_log
+const logger = require('./logger').logger
 const sql = require('./sql')
 
 /*
@@ -17,26 +17,26 @@ SET richness_order =  case
 */
 
 const initDB =  async function(){
-    console_log('cyan','drop tables systems and planets');
+    logger.info('drop tables systems and planets');
     await sql.dump();
-    console_log('cyan','create tables systems and planets');
+    logger.info('create tables systems and planets');
     await sql.create();
-    console_log('cyan','insert data in table systems');
+    logger.info('insert data in table systems');
     await sql.insertSystems();
-    console_log('cyan','checking data');
+    logger.info('checking data');
     var row = await sql.count();
     if (row == '4512'){
-        console_log('green','system data are mounted');
-        console_log('green','n row = '+row);
+        logger.info('system data are mounted');
+        logger.info('n row = '+row);
     }else{
-        console_log('red','error : restarting server needed');
+        logger.error('error : restarting server needed');
     }
     var rowMaterials = await sql.countMaterials();
     if (row == '147936'){
-        console_log('green','planets data are mounted');
-        console_log('green','n row = '+row);
+        logger.info('planets data are mounted');
+        logger.info('n row = '+row);
     }else{
-        console_log('red','error : restarting server needed');
+        logger.error('error : restarting server needed');
     }
 }
 
@@ -46,35 +46,35 @@ const  checkDB =  async function(){
     try{
         var row =  await sql.count();
         if (row == 4512){
-            console_log('green','systems data are mounted')
-            console_log('green','n row = '+row);
+            logger.info('systems data are mounted')
+            logger.info('n row = '+row);
             mounted = true;
         } else if (row == undefined){
-            console_log('red','systems tables doesn t exist')
+            logger.info('systems tables doesn t exist')
             mounted = false;            
         } else {
-            console_log('red','systems tables need to be mounted')
+            logger.info('systems tables need to be mounted')
             mounted = false;                        
         }
         var row =  await sql.countMaterials();
         if (row == 147936){
-            console_log('green','planets data are mounted')
-            console_log('green','n row = '+row);
+            logger.info('planets data are mounted')
+            logger.info('n row = '+row);
             mounted = true;
         } else if (row == undefined){
-            console_log('red','planets tables doesn t exist')
+            logger.error('planets tables doesn t exist')
             mounted = false;            
         } else {
-            console_log('red','planets tables need to be mounted')
+            logger.error('planets tables need to be mounted')
             mounted = false;                        
         }
     }catch(error){
-        console_log('yellow',error)
+        logger.error(error)
     }
 
     if (mounted==false){
-        console_log('red','dataset not mounted...')
-        console_log('cyan','dataset initialization...')
+        logger.error('dataset not mounted...')
+        logger.info('dataset initialization...')
         await initDB();
     }
 }

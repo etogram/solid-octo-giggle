@@ -23,7 +23,7 @@ var corsOptions = {
   "preflightContinue": false,
   "optionsSuccessStatus": 204
 }
-const materialsOpt = require('./sql/syntax').materialsOpt;
+const materialsOpt = require('../ioevents/sql/syntax').materialsOpt;
 
 
 

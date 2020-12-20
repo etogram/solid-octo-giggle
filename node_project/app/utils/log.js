@@ -1,34 +1,31 @@
+const logger = require('./logger').logger;
+
 const displayDate = require('./date').displayDate;
 
 //middlewares
 //middlware logger
 const console_log = function (color,text){
-    const Reset = "\x1b[0m";
-    const FgRed = "\x1b[31m"
-    const FgGreen = "\x1b[32m"
-    const FgYellow = "\x1b[33m"
-    const FgCyan = "\x1b[36m"
 
     switch (color.toLowerCase()) {
           case 'green':
-            msg = FgGreen+text+Reset
+            logger.info(text)
             break;
           case 'red':
-            msg = FgRed+text+Reset
+            logger.info(text)
             break;
           case 'yellow':
-            msg = FgYellow+text+Reset
+            logger.info(text)
             break;
           case 'cyan':
-            msg = FgCyan+text+Reset
+            logger.info(text)
             break;
           default:
-            msg = Reset+text+Reset
+            logger.info(text)
         }
-    console.log(msg)
+    
 }
 
-const logger = function (req, res, next) {
+const log  = function (req, res, next) {
     
     var beginDate = Date.now();
     var elements = [
@@ -38,7 +35,7 @@ const logger = function (req, res, next) {
     var log = elements.join(' ')
 
 
-    console.log(`${log} ${req.method} [STARTED] ${req.originalUrl}`)
+    logger.info(`${log} ${req.method} [STARTED] ${req.originalUrl}`)
 
     res.on('close', () => {
         var duration = Date.now()-beginDate;
@@ -46,13 +43,13 @@ const logger = function (req, res, next) {
         var shortStatus = res.statusCode.toString()[0];
 
         if (shortStatus == '2'){
-            console_log('green',closedLog)
+            logger.info(closedLog)
         }else if(shortStatus == '5'){
-            console_log('red',closedLog)            
+            logger.info(closedLog)            
         }else if(shortStatus == '4'){
-            console_log('yellow',closedLog)            
+            logger.info(closedLog)            
         }else{
-            console_log('white',closedLog)                        
+            logger.info(closedLog)                        
         }
 
     })
@@ -60,5 +57,5 @@ const logger = function (req, res, next) {
     next()
 };
 
-module.exports.logger = logger
+module.exports.log = log
 module.exports.console_log = console_log

@@ -8,6 +8,7 @@
 <meta name="domainUrl" content="{{domainUrl}}">
 <meta name="materialsOpt" content="{{materialsOpt}}">
 
+
 <!-- Load required Bootstrap and BootstrapVue CSS -->
 <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
 <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
@@ -34,60 +35,28 @@
 
 </head>
 <body>
+
 <div id="app" class="container-fluid" style="font-family:'Courier New', Courier, 'Liberation Mono', monospace;'">
+   
+
+    <div class="row mt-3">
+        <p class="mx-auto">to do  3.nginx 4.lets encrypt et 5.find a domain et apres 6. on monte un swarm</p>
+    </div>
+
 
     <div class="row mt-3">
         <h1 class="mx-auto">EVE echoes planetary production finder</h1>
     </div>
     
     <div class="row">
-        <div class="col-xl-6">
-            <label class="mb-0" for="location">Location</label>
-            <b-input-group class="mt-0">
-                <template #append>
-                    <b-input-group-text @click="searchInit">
-                        <strong class="text-danger">
-                            <b-icon-x></b-icon>
-                        </strong>
-                    </b-input-group-text>
-                </template>
-                <template #prepend>
 
-                          <b-dropdown :text="searchOpt" variant="secondary">
-        <b-dropdown-item @click="getlistOpt('system')">system</b-dropdown-item>
-        <b-dropdown-item 
-        @click="getlistOpt('constellation')">constellation</b-dropdown-item>
-        <b-dropdown-item 
-        @click="getlistOpt('region')">region</b-dropdown-item>
-      </b-dropdown>
-                </template>
-                <b-form-input id="location" list="options" v-model="location" v-on:delete="getSystem" v-on:keyup="getSystem" ></b-form-input>
-                <datalist id="options" >
-                    <option v-for="option in options" v-if="searchOpt=='system'">
-                        <span>${ option.region} > ${ option.constellation} > ${ option.name}</span>
-                    </option>
-                    <option v-for="option in options" v-if="searchOpt=='constellation'">
-                        <span>${ option.region} > ${ option.constellation}</span>
-                    </option>
-                    <option v-for="option in options" v-if="searchOpt=='region'">
-                        <span>${ option.region}</span>
-                    </option>
-                </datalist>
-            </b-input-group>
-
-
-        </div>
+      <autofill :items="autofillItems" v-on:input="onSearchChange" v-on:search-set="onSearchSet" v-on:reset="onSearchReset" v-on:search-opt="onSearchOptChange"></autofill>
 
         <div class="col-xl-3">
             <template >
               <div>
-                <label for="sb-jumps">Jumps</label>
-                <b-form-spinbutton
-                  id="sb-jumps"
-                  v-model="jumps"
-                  min="0"
-                  max="10"
-                  step="1"
+                <label class="mb-0" for="sb-jumps">Jumps</label>
+                <b-form-spinbutton class="mt-0" id="sb-jumps" v-model="jumps" min="0" max="10" step="1"
                 ></b-form-spinbutton>
               </div>
             </template>
@@ -96,40 +65,16 @@
         <div class="col-xl-3">
             <template >
               <div>
-                <label for="sb-step">Security level</label>
-                <b-form-spinbutton
-                  id="sb-step"
-                  v-model="securityLevel"
-                  min="-1"
-                  max="1"
-                  step="0.1"
+                <label class="mb-0" for="sb-step">Security level</label>
+                <b-form-spinbutton class="mt-0" id="sb-step" v-model="securityLevel" min="-1" max="1" step="0.1"
                 ></b-form-spinbutton>
               </div>
             </template>
         </div>
     </div>
 
-
-
     <div class="row mx-3 my-3">
-        <div class="col-4-xl" style="width: 40vw;">
-            <template>
-              <div>
-                <b-form-select v-model="materialsSelected" :options="materialsOpt" multiple select-size="10"></b-form-select>
-
-            </template>
-            <!--template>
-              <div>
-                <b-form-select v-model="materialsSelected" :options="materialsOpt" multiple >
-                </b-form-select>
-                </div>
-            </template-->
-        </div>
-        <div class="col-7-xl mx-3" style="width: 40vw;">
-            <span class="mx-1 my-1" v-for="tag in tags">
-                <b-badge class="px-2 my-2 py-2">${tag}</b-badge>
-            </span>
-        </div>  
+      <tags v-on:update-tags="updateTags" :tags="materialsOpt"></tags>
     </div>
 
     <div class="row mt-3">
@@ -137,207 +82,294 @@
     </div>
 
         <div class="row mt-3">
-
-            <b-list-group>
-              <b-list-group-item v-for="inf in info" :variant="getVariant(inf.richness)" v-if="searchOpt=='system'">${inf.resource} - ${inf.richness}: ${inf.jumps} ${inf.jumps>1&&'jumps'||'jump'} :  ${inf.region}-${inf.constellation}- ${inf.system} - ${inf.planet} - ${inf.security}
-              </b-list-group-item>
-              <b-list-group-item v-for="inf in info" :variant="getVariant(inf.richness)" v-if="searchOpt=='constellation'">${inf.resource} - ${inf.richness}: ${inf.region}-${inf.constellation}- ${inf.system} - ${inf.planet} - ${inf.security}
-              </b-list-group-item>
-              <b-list-group-item v-for="inf in info" :variant="getVariant(inf.richness)" v-if="searchOpt=='region'">${inf.resource} - ${inf.richness}: ${inf.region}-${inf.constellation}- ${inf.system} - ${inf.planet} - ${inf.security}
+            <b-list-group class="mx-auto">
+              <b-list-group-item v-for="result in results" :variant="result.variant">
+                ${result.text}
               </b-list-group-item>
             </b-list-group>
-
         </div>
 </div>
 
 
+<script  type="text/javascript" src="/socket.io/socket.io.js"></script>
+
+
+
 <script>
+
+
+Vue.component('tags', {
+  delimiters: ['${', '}'],
+  props: ['tags'],
+  data: function () {
+    return {
+      select:[],
+      text:''
+    }
+  },
+  computed: {
+    //
+  },
+  template: '<div>\
+        <b-button variant="outline-secondary"  size="sm" class="my-1 mx-1 px-1 py-0" v-for="tag in tags" :data-value="tag.value"  @click="toggle" style="font-size: smaller;">${tag.text}</b-button>\
+</div>',
+  mounted:function(){
+  },
+  methods:{
+    toggle(event){
+      if (event.target.className.indexOf("active")==-1){
+        this.select.push(event.target.dataset.value)
+        event.target.classList.add("active");
+        this.$emit('update-tags',this.select.sort(function(a, b) {return parseInt(a) - parseInt(b);}));
+      }else{
+        event.target.classList.remove("active");
+        var index = this.select.indexOf(event.target.dataset.value);
+        if (index > -1) {
+          this.select.splice(index, 1);
+          this.$emit('update-tags',this.select.sort(function(a, b) {return parseInt(a) - parseInt(b);}));
+        }
+      }
+    },
+  },
+})
+
+Vue.component('autofill', {
+  delimiters: ['${', '}'],
+  props: ['items'],
+  data: function () {
+      return {
+        isOpen: false,
+        search: '',
+        results: [],
+        isLoading:false,
+        socket:null,
+        searchOpt:"system",
+      };
+  },
+  computed: {
+    choices:function(){
+      var temp = [];
+      switch(this.searchOpt){
+      case 'system':
+        this.results.forEach(e=>temp.push(e.region+' > '+e.constellation+' > '+e.name))
+        break
+      case 'constellation':
+        this.results.forEach(e=>temp.push(e.region+' > '+e.constellation))
+        break
+      case 'region':
+        this.results.forEach(e=>temp.push(e.region))
+        break
+      default:
+        //
+      }
+      return temp
+    },
+  },
+  template: '<div class="col-xl-6">\
+  <label class="mb-0" for="location">Location</label>\
+  <b-input-group class="mt-0">\
+    <template #append>\
+      <b-input-group-text @click="searchInit">\
+        <strong class="text-danger">\
+          <b-icon-x></b-icon>\
+        </strong>\
+      </b-input-group-text>\
+    </template>\
+    <template #prepend>\
+      <b-dropdown :text="searchOpt" variant="secondary">\
+      <b-dropdown-item  @click="getlistOpt(\'system\')">system</b-dropdown-item>\
+      <b-dropdown-item \
+      @click="getlistOpt(\'constellation\')">constellation</b-dropdown-item>\
+      <b-dropdown-item \
+      @click="getlistOpt(\'region\')">region</b-dropdown-item>\
+      </b-dropdown>\
+    </template>\
+    <b-form-input id="location" autocomplete="off" list="autocompleteList"\ v-on:keyup.enter="setResult" v-on:change="setResult" v-model="search" \
+    v-on:keyup="onChange" ></b-form-input>\
+    <datalist id="autocompleteList" >\
+      <template v-for="choice in choices">\
+        <option >${choice}</option>\
+      </template>\
+    </datalist>\
+  </b-input-group>\
+</div>',
+    watch: {
+      items: function (val, oldValue) {
+        if (val !== oldValue) {
+          this.results = val;
+          this.isLoading = false;
+        }
+      },
+      searchOpt: function (val, oldValue) {
+        if (val !== oldValue) {
+          this.$emit('search-opt',val);
+        }
+      },      
+      search: function (val, oldValue) {
+        if (val !== oldValue) {
+        this.$emit('search-set',val);
+        }
+      },      
+    },
+    mounted() {
+      document.addEventListener('click', this.handleClickOutside)
+    },
+    destroyed() {
+      document.removeEventListener('click', this.handleClickOutside)
+    },
+  methods:{
+      searchInit:function(code){
+        this.$emit('reset');
+        this.search='';
+      },
+      getlistOpt:function(opt){
+        this.search='';
+        this.searchOpt=opt;
+      },
+      onChange() {
+        this.$emit('input',this.search,this.searchOpt);
+        this.isLoading = true;
+          },
+      setResult(result) {
+        var temp;
+        switch(this.searchOpt){
+          case 'system':
+            try{
+              temp = this.search.split('>')[2].trim();
+            }catch{
+              console.log('incatch')
+              temp = this.search;
+            }
+            break
+          case 'constellation':
+            try{
+              temp = this.search.split('>')[1].trim();
+            }catch{
+              console.log('incatch')
+              temp = this.search;
+            }
+            break
+          case 'region':
+            try{
+              temp = this.search.trim();
+            }catch{
+              console.log('incatch')
+              temp = this.search;
+            }
+            break
+          default:
+          //
+        }
+        console.log('emit location')
+        this.$emit('search-set',temp,this.searchOpt);
+      },
+      handleClickOutside(evt) {
+        if (!this.$el.contains(evt.target)) {
+          this.isOpen = false;
+
+        }
+      }
+  },
+})
 
 var app = new Vue({
   delimiters: ['${', '}'],
   el: '#app',
   data: {
-    //domain:"https://peaceful-waters-24226.herokuapp.com",
-    domain:JSON.parse(document.querySelector('meta[name="domainUrl"]').getAttribute('content')),//"146.59.248.244:80,
+    domain:JSON.parse(document.querySelector('meta[name="domainUrl"]').getAttribute('content')),
     location:'',
-    system:'',
-    info:null,
-    options:[],
+    info:[],
     securityLevel:0.5,
     jumps:5,
+    socket:'',
+    autofillItems:[],
     searchOpt:"system",
     materialsSelected:[],
     materialsOpt:JSON.parse(document.querySelector('meta[name="materialsOpt"]').getAttribute('content')),
-    defaultOptions:JSON.parse(document.querySelector('meta[name="defaultOptions"]').getAttribute('content'))
   },
   mounted:function(){
     console.log('mounted');
-    var self = this;
-    this.options = this.defaultOptions;
- 
+    this.socket = io(this.domain);
   },
-  computed: {
+  computed:{
     tags:function(){
-        var ret=[]
-        for (let i=0;i<this.materialsSelected.length;i++){
-            ret.push(this.materialsOpt[this.materialsSelected[i]].text)
-        }
-        console.log(ret)
-        return ret
+      var ret = [];
+      for (let i=0;i<this.materialsSelected.length;i++){
+          ret.push(this.materialsOpt[this.materialsSelected[i]].text)
+      }
+      return ret
     },
-    locationTag:function(){
-        var ret;
+    results:function(){
+      var ret = [];
+      var setVariant = {"Poor":"muted","Medium":"warning","Rich":"info","Perfect":"success"}
+      if (this.info.length>0){
         switch (this.searchOpt) {
-          case "system":
-            ret = this.location.region+' > '+this.location.constellation+' > '+this.location.system;
+          case 'system':
+            for (let i=0;i<this.info.length;i++){
+              var e=this.info[i];
+              var jumpText = e.jumps>1&&'jumps'||'jump';
+              var chunk = `${e.resource} - ${e.richness}: ${e.jumps} ${jumpText} :  ${e.region}-${e.constellation}- ${e.system} - ${e.planet} - ${e.security}`;
+              ret.push({text:chunk,variant:setVariant[e.richness]})
+            }
             break;
-          case "constellation":
-            ret = this.location.region+' > '+this.location.constellation;
+          case 'constellation':
+          case 'region':
+            for (let i=0;i<this.info.length;i++){
+              var e=this.info[i];
+              var chunk = `${e.resource} - ${e.richness} :  ${e.region}-${e.constellation}- ${e.system} - ${e.planet} - ${e.security}`
+              ret.push({text:chunk,variant:setVariant[e.richness]})
+            }
             break;
-          case "region":
-            ret = this.location.region;
-            break;
-          default:
-            ret = this.location.region+' > '+this.location.constellation+' > '+this.location.system;
         }
-        return ret;
+      }
+      return ret
     },
   },
   methods:{
-    searchInit:function(code){
-        console.log('in search init')
-        this.location='';
-    },
-    getlistOpt:function(listOptType){
-        this.location='';
-        this.searchOpt=listOptType;
-
-        /*var self = this;
-
-        var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        var data={data:listOptType};
-
-        axios({
-            method: 'post',
-            url: self.domain+"/list-opt",
-            contentType: 'application/json',
-
-          headers: {
-            'CSRF-Token': token // <-- is the csrf token as a header
-          },
-            data: data ,
+    onSearchChange:function(search,opt){
+      var data = {data:search,opt:opt};
+      var self = this;
+      return new Promise((resolve,reject) => {
+        self.socket.emit('autocomplete', data, function(error, response){
+          if (error){reject(error)};
+          self.autofillItems=response;
+          resolve(response);
         })
-        .then(function (response) {
-            console.log('ajax response')
-            console.log(response.data)
-            self.searchOpt=listOptType
-            self.options = response.data
-          })
-        .catch(function (erreur) {
-            console.log(erreur);
-        });*/          
+      })
     },
-    getVariant:function(code){
-        var variant;
-        console.log(code)
-        switch (code) {
-          case 'Poor':
-            variant = 'muted';
-            break;
-          case 'Medium':
-            variant = 'warning';
-            break;
-          case 'Rich':
-            variant = 'info';
-            break;
-          case 'Perfect':
-            variant = 'success';
-            break;
-          default:
-            variant = 'light';
-        }
-        console.log(variant)
-        return variant;
+    onSearchSet:function(search){
+      this.location = search;
     },
-    getSystem:function(event){
-
-        var self = this;
-        var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        var data={data:this.location,opt:this.searchOpt};
-        console.log('axios')
-        axios({
-            method: 'post',
-            url: self.domain+"/systems-list",
-            contentType: 'application/json',
-
-          headers: {
-            'CSRF-Token': token // <-- is the csrf token as a header
-          },
-            data: data ,
-        })
-        .then(function (response) {
-            console.log('ajax response')
-            console.log(response.data)
-            self.options = response.data
-          })
-        .catch(function (erreur) {
-            console.log(erreur);
-        });   
-
+    onSearchReset:function(){
+      this.location = '';
     },
-    getLocation:function(){
-        var ret;
-        var self = this;
-        switch (this.searchOpt) {
-          case "system":
-            ret = (this.location.split('>')[2]).trim();
-            break;
-          case "constellation":
-            ret = (this.location.split('>')[1]).trim();
-            break;
-          case "region":
-            ret = self.location;
-            break;
-          default:
-            ret = ''
-        }
-        return ret;
-
+    onSearchOptChange:function(opt){
+      this.searchOpt = opt;
+    },
+    updateTags:function(tagsList){
+      this.materialsSelected = tagsList;
     },
     find:function(){
-        console.log('find')
         var self = this;
-        this.info=null;
-        console.log(this.getLocation());
+        this.info=[];
         var data = {
             searchOpt:this.searchOpt,
-            location:this.getLocation(),
+            location:this.location,
             materials:this.materialsSelected,
             jumps:this.jumps,
             securityLevel:this.securityLevel,
             }
-        var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        this.info=null
-        console.log('he man ! you need a spinner, dont you?')
-        axios({
-            method: 'post',
-            url: self.domain+"/materials",
-            contentType: 'application/json',
-              credentials: 'same-origin', // <-- includes cookies in the request
-          headers: {
-            'CSRF-Token': token, // <-- is the csrf token as a header
-            "Access-Control-Allow-Origin":"same-origin"
-          },
-            data: data ,
-        })
-        .then(function (response) {
-            console.log('get answer')
-            console.log(response.data)
-            self.info = response.data
-          })
-        .catch(function (erreur) {
-            console.log(erreur);
-        });       
+
+        if (this.location!==''){
+          console.log('send socket')
+          console.log(data)
+          self.socket.emit('find', data, function(error, response){
+            console.log('insocket')
+            if (error){console.log(error)};
+            if (response!==null){
+              self.info=response;}
+          })          
+        }
     },
   }
 });

@@ -1,0 +1,6 @@
+NODE_ENV=development
+DOMAIN_URL=http://127.0.0.1:80
+
+#NODE_ENV=production
+
+#DOMAIN_URL=http://146.59.248.244:80
