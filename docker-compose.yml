@@ -16,8 +16,7 @@ services:
     container_name: express
     hostname: express
     working_dir: /node_project/app
-    stdin_open: true
-    tty: true
+    command: bash -c 'npm start'
     volumes:
       - ./node_project:/node_project
     ports:
