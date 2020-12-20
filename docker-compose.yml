@@ -47,6 +47,7 @@ services:
     read_only: true
     user: root
     volumes:
+      -  etc/letsencrypt/live/planetsmining.fr/:etc/letsencrypt/live/planetsmining.fr/
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/nginx_tmp:/nginx_tmp:rw
       - ./node_project/app:/node_project/app:ro
