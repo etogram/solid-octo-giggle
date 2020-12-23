@@ -1,4 +1,4 @@
-
+nginx_conf_80 ='''
 
 worker_processes auto;
 
@@ -86,3 +86,4 @@ http {
     }
 
 }#end http
+'''
