@@ -45,16 +45,20 @@ def get_env():
 
 env_dict = get_env()
 
+nginx_conf_file = os.path.join(base_path,"nginx","nginx.conf")
+
 if env_dict["NODE_ENV"] == "production":
     logger.info("------ production mode ------")
     nginx_conf_file_template = os.path.join(base_path,"config","init","template","nginx_conf_template_443")
-    t = Templite(nginx_conf_file_template,{})
+    t = Templite(nginx_conf_443,{})
     nginx_conf = t.render(context_production_443)
+    with open(nginx_conf_file,"w") as f:
+        f.write(nginx_conf)
 
 if env_dict["NODE_ENV"] == "development":
     logger.info("------ development mode ------")
     t = Templite(nginx_conf_80,{})
     nginx_conf = t.render(context_development_80)
-    nginx_conf_file = os.path.join(base_path,"nginx","nginx.conf")
     with open(nginx_conf_file,"w") as f:
         f.write(nginx_conf)
+
