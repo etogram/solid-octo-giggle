@@ -48,7 +48,7 @@ if [ -f "$FILE" ]; then
 fi
 
 echo "do you want to run certbot container to create the keys?"
-echo -n "Continue (Y/n)? "
+echo -n "Run certbot (Y/n)? "
 read answer
 if [ "$answer" != "${answer#[Y]}" ] ;then
     echo "running docker container..."
@@ -68,3 +68,15 @@ sudo docker run -it --rm --name python \
             -v "$PWD:$PWD" \
             python:3 \
             python $PWD/config/init/create_nginx_conf.py
+
+echo "4. install docker-compose if needed"
+{ # try
+
+    docker-compose --version &&
+    #save your output
+    echo "docker-compose is already installed"
+
+} || { # catch
+    # save log for exception 
+    echo "docker-compose is not installed"    
+}
