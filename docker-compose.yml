@@ -41,7 +41,7 @@ services:
     networks:
       - backend
   nginx:
-    image: purpleren/purpleren_project:nginx
+    image: nginx
     container_name: nginx
     hostname: nginx
     read_only: true
