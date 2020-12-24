@@ -32,6 +32,7 @@ context_development_80 = {
     }
 
 env_file = os.path.join(base_path,"node_project","app",".env")
+
 def get_env():
     env_dict = {}
     with open(env_file,"r") as f:

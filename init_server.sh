@@ -67,7 +67,7 @@ echo "3. create the nginx conf file"
 sudo docker run -it --rm --name python \
             -v "$PWD:$PWD" \
             python:3 \
-            python $PWD/config/init/create_nginx_conf.py
+            python3 $PWD/config/init/create_nginx_conf.py
 
 echo "4. install docker-compose if needed"
 { # try

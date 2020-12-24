@@ -56,25 +56,8 @@ http {
 
         client_max_body_size 1M;   # adjust to taste
 
-       # in fine le bundle js c est ici
-#        location /static { 
-#            alias /project-hesabu/static;
-#            # On active la compression
-#            gzip  on;
-#            gzip_http_version 1.0;
-#            gzip_vary on;
-#            gzip_comp_level 6;
-#            gzip_proxied any;
-#            gzip_types text/plain text/css application/
-#json application/x-javascript text/xml application/xml 
-#application/xml+rss text/javascript;
-#            gzip_buffers 16 8k;
-#
-#            # Sauf pour les vieux nav
-#            gzip_disable ~@~\MSIE [1-6].(?!.*SV1)~@~];
-#
-#            # On dit au navigateur de le mettre en cache 
-#pour 10 jours. Faites gaffe,
+        location /static { 
+        }
 
 
 
