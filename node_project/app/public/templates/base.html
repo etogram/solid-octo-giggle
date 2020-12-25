@@ -35,7 +35,7 @@
 
 </head>
 <body>
-
+${wi}
 <div id="app" class="container-fluid" style="font-family:'Courier New', Courier, 'Liberation Mono', monospace;'">
 
     <div class="row mt-3">
@@ -183,7 +183,7 @@ Vue.component('autofill', {
       @click="getlistOpt(\'region\')">region</b-dropdown-item>\
       </b-dropdown>\
     </template>\
-    <b-form-input id="location" autocomplete="off" list="autocompleteList"\ v-on:keyup.enter="setResult" v-on:change="setResult" v-model="search" \
+    <b-form-input id="location" class="input-font" autocomplete="off" list="autocompleteList"\ v-on:keyup.enter="setResult" v-on:change="setResult" v-model="search" \
     v-on:keyup="onChange" ></b-form-input>\
     <datalist id="autocompleteList" >\
       <template v-for="choice in choices">\
@@ -408,6 +408,38 @@ font-size: 2em;
 {
   .font-responsive-vw{
 font-size: 3em;
+  }
+  }
+
+.input-font
+{
+font-size: x-small;
+}
+
+/*sm*/
+@media screen and (min-width: 576px) { 
+  .input-font{
+font-size: initial;
+  }
+  }
+
+/*md*/
+@media screen and (min-width: 768px) { 
+  .input-font{
+    font-size: initial;
+  }
+  }
+
+/*lg*/
+@media screen and (min-width: 992px) { 
+  .input-font{
+    font-size: initial;
+  }
+  }
+/*xl*/
+@media screen and (min-width: 1200px){
+  .input-font{
+    font-size: initial;
   }
   }
 
