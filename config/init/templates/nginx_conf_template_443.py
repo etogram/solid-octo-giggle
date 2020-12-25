@@ -1,6 +1,6 @@
 nginx_conf_443 ='''worker_processes auto;
 
-error_log /tmp/error.log;;
+error_log /tmp/error.log;
 
 events {
 
