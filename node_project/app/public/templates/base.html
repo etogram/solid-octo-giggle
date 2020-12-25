@@ -37,7 +37,7 @@
 <body>
 <div id="app" class="container-fluid" style="font-family:'Courier New', Courier, 'Liberation Mono', monospace;'">
     <div class="row mt-3">
-        <h1 class="mx-auto font-responsive-vw">EVE echoes planetary production finder</h1>
+        <h1 class="mx-auto title-font-responsive-vw">EVE echoes planetary production finder</h1>
     </div>
     
     <div class="row">
@@ -47,7 +47,7 @@
         <div class="col-xl-3">
             <template >
               <div>
-                <label class="mb-0" for="sb-jumps">Jumps</label>
+                <label class="mb-0 font-responsive-vw" for="sb-jumps" >Jumps</label>
                 <b-form-spinbutton class="mt-0" id="sb-jumps" v-model="jumps" min="0" max="10" step="1" :size="responsiveSize"
                 ></b-form-spinbutton>
               </div>
@@ -57,7 +57,7 @@
         <div class="col-xl-3">
             <template >
               <div>
-                <label class="mb-0" for="sb-step">Security level</label>
+                <label class="mb-0 font-responsive-vw" for="sb-step">Security level</label>
                 <b-form-spinbutton class="mt-0" id="sb-step" v-model="securityLevel" min="-1" max="1" step="0.1" :size="responsiveSize"
                 ></b-form-spinbutton>
               </div>
@@ -171,8 +171,7 @@ Vue.component('autofill', {
     },
   },
   template: '<div class="col-xl-6">\
-${windowWidth}\
-  <label class="mb-0" for="location">Location</label>\
+  <label class="mb-0 font-responsive-vw" for="location">Location</label>\
   <b-input-group :size="responsiveSize" class="mt-0">\
     <template #append >\
       <b-input-group-text @click="searchInit">\
@@ -183,11 +182,11 @@ ${windowWidth}\
     </template>\
     <template #prepend>\
       <b-dropdown :text="searchOpt" variant="secondary" :size="responsiveSize">\
-      <b-dropdown-item  @click="getlistOpt(\'system\')">system</b-dropdown-item>\
+      <b-dropdown-item  @click="getlistOpt(\'system\')" class="font-responsive-vw">system</b-dropdown-item>\
       <b-dropdown-item \
-      @click="getlistOpt(\'constellation\')">constellation</b-dropdown-item>\
+      @click="getlistOpt(\'constellation\')" class="font-responsive-vw">constellation</b-dropdown-item>\
       <b-dropdown-item \
-      @click="getlistOpt(\'region\')">region</b-dropdown-item>\
+      @click="getlistOpt(\'region\')" class="font-responsive-vw">region</b-dropdown-item>\
       </b-dropdown>\
     </template>\
     <b-form-input id="location" autocomplete="off" list="autocompleteList"\ v-on:keyup.enter="setResult" v-on:change="setResult" v-model="search" \
@@ -295,7 +294,8 @@ var app = new Vue({
   data: {
     domain:JSON.parse(document.querySelector('meta[name="domainUrl"]').getAttribute('content')),
     location:'',
-    windowWidth:null,
+    windowWidth:window.innerWidth,
+    responsiveSize:window.innerWidth&&"sm"||"",
     info:[],
     securityLevel:0.5,
     jumps:5,
@@ -310,13 +310,6 @@ var app = new Vue({
     this.socket = io(this.domain);
   },
   computed:{
-    responsiveSize:function(){
-      var ret = "";
-      if(this.windowWidth<576){
-        ret = "sm"
-      }
-      return ret;
-    },
     tags:function(){
       var ret = [];
       for (let i=0;i<this.materialsSelected.length;i++){
@@ -353,6 +346,11 @@ var app = new Vue({
   methods:{
     onWidthChange:function(width){
       this.windowWidth = width;
+      var ret = "";
+      if(this.windowWidth<576){
+        ret = "sm"
+      }
+      this.responsiveSize = ret;
     },
     onSearchChange:function(search,opt){
       var data = {data:search,opt:opt};
@@ -403,9 +401,9 @@ var app = new Vue({
 });
 </script>
 <style>
-/*font-responsive-vw*/
+/*title-font-responsive-vw*/
 /*xs*/
-.font-responsive-vw
+.title-font-responsive-vw
 {
 font-size: 1em;
 font-weight: bold;
@@ -413,7 +411,7 @@ font-weight: bold;
 
 /*sm*/
 @media screen and (min-width: 576px) { 
-  .font-responsive-vw{
+  .title-font-responsive-vw{
 font-size: 1em;
 font-weight: bold;
   }
@@ -421,22 +419,57 @@ font-weight: bold;
 
 /*md*/
 @media screen and (min-width: 768px) { 
-  .font-responsive-vw{
+  .title-font-responsive-vw{
 font-size: 2em;
   }
   }
 
 /*lg*/
 @media screen and (min-width: 992px) { 
-  .font-responsive-vw{
+  .title-font-responsive-vw{
 font-size: 2em;
   }
   }
 /*xl*/
 @media screen and (min-width: 1200px)
 {
-  .font-responsive-vw{
+  .title-font-responsive-vw{
 font-size: 3em;
+  }
+  }
+
+/*font-responsive-vw*/
+/*xs*/
+.font-responsive-vw
+{
+font-size: smaller;
+}
+
+/*sm*/
+@media screen and (min-width: 576px) { 
+  .font-responsive-vw{
+font-size: initial;
+  }
+  }
+
+/*md*/
+@media screen and (min-width: 768px) { 
+  .font-responsive-vw{
+font-size: initial;
+  }
+  }
+
+/*lg*/
+@media screen and (min-width: 992px) { 
+  .font-responsive-vw{
+font-size: initial;
+  }
+  }
+/*xl*/
+@media screen and (min-width: 1200px)
+{
+  .font-responsive-vw{
+font-size: initial;
   }
   }
 
