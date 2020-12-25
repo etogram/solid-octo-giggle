@@ -36,20 +36,19 @@
 </head>
 <body>
 <div id="app" class="container-fluid" style="font-family:'Courier New', Courier, 'Liberation Mono', monospace;'">
-
     <div class="row mt-3">
         <h1 class="mx-auto font-responsive-vw">EVE echoes planetary production finder</h1>
     </div>
     
     <div class="row">
 
-      <autofill :items="autofillItems" v-on:input="onSearchChange" v-on:search-set="onSearchSet" v-on:reset="onSearchReset" v-on:search-opt="onSearchOptChange"></autofill>
+      <autofill :items="autofillItems" v-on:input="onSearchChange" v-on:window-width-change="onWidthChange" v-on:search-set="onSearchSet" v-on:reset="onSearchReset" v-on:search-opt="onSearchOptChange"></autofill>
 
         <div class="col-xl-3">
             <template >
               <div>
                 <label class="mb-0" for="sb-jumps">Jumps</label>
-                <b-form-spinbutton class="mt-0" id="sb-jumps" v-model="jumps" min="0" max="10" step="1"
+                <b-form-spinbutton class="mt-0" id="sb-jumps" v-model="jumps" min="0" max="10" step="1" :size="responsiveSize"
                 ></b-form-spinbutton>
               </div>
             </template>
@@ -59,7 +58,7 @@
             <template >
               <div>
                 <label class="mb-0" for="sb-step">Security level</label>
-                <b-form-spinbutton class="mt-0" id="sb-step" v-model="securityLevel" min="-1" max="1" step="0.1"
+                <b-form-spinbutton class="mt-0" id="sb-step" v-model="securityLevel" min="-1" max="1" step="0.1" :size="responsiveSize"
                 ></b-form-spinbutton>
               </div>
             </template>
@@ -142,9 +141,17 @@ Vue.component('autofill', {
         isLoading:false,
         socket:null,
         searchOpt:"system",
+        windowWidth: window.innerWidth,
       };
   },
   computed: {
+    responsiveSize:function(){
+      var ret = "";
+      if(this.windowWidth<576){
+        ret = "sm"
+      }
+      return ret;
+    },
     choices:function(){
       var temp = [];
       switch(this.searchOpt){
@@ -164,17 +171,18 @@ Vue.component('autofill', {
     },
   },
   template: '<div class="col-xl-6">\
+${windowWidth}\
   <label class="mb-0" for="location">Location</label>\
-  <b-input-group class="mt-0">\
-    <template #append>\
+  <b-input-group :size="responsiveSize" class="mt-0">\
+    <template #append >\
       <b-input-group-text @click="searchInit">\
-        <strong class="text-danger">\
+        <strong  class="text-danger">\
           <b-icon-x></b-icon>\
         </strong>\
       </b-input-group-text>\
     </template>\
     <template #prepend>\
-      <b-dropdown :text="searchOpt" variant="secondary">\
+      <b-dropdown :text="searchOpt" variant="secondary" :size="responsiveSize">\
       <b-dropdown-item  @click="getlistOpt(\'system\')">system</b-dropdown-item>\
       <b-dropdown-item \
       @click="getlistOpt(\'constellation\')">constellation</b-dropdown-item>\
@@ -182,7 +190,7 @@ Vue.component('autofill', {
       @click="getlistOpt(\'region\')">region</b-dropdown-item>\
       </b-dropdown>\
     </template>\
-    <b-form-input id="location" class="input-font" autocomplete="off" list="autocompleteList"\ v-on:keyup.enter="setResult" v-on:change="setResult" v-model="search" \
+    <b-form-input id="location" autocomplete="off" list="autocompleteList"\ v-on:keyup.enter="setResult" v-on:change="setResult" v-model="search" \
     v-on:keyup="onChange" ></b-form-input>\
     <datalist id="autocompleteList" >\
       <template v-for="choice in choices">\
@@ -192,6 +200,10 @@ Vue.component('autofill', {
   </b-input-group>\
 </div>',
     watch: {
+      windowWidth(newWidth, oldWidth) {
+        this.windowWidth = newWidth;
+        this.$emit('window-width-change',newWidth);
+      },
       items: function (val, oldValue) {
         if (val !== oldValue) {
           this.results = val;
@@ -210,12 +222,19 @@ Vue.component('autofill', {
       },      
     },
     mounted() {
-      document.addEventListener('click', this.handleClickOutside)
+      this.$nextTick(() => {
+        document.addEventListener('click', this.handleClickOutside)
+        window.addEventListener('resize', this.onResize);
+      })
     },
-    destroyed() {
+    beforeDestroy() { 
+      window.removeEventListener('resize', this.onResize); 
       document.removeEventListener('click', this.handleClickOutside)
-    },
+  },
   methods:{
+      onResize() {
+        this.windowWidth = window.innerWidth;
+      },
       searchInit:function(code){
         this.$emit('reset');
         this.search='';
@@ -276,6 +295,7 @@ var app = new Vue({
   data: {
     domain:JSON.parse(document.querySelector('meta[name="domainUrl"]').getAttribute('content')),
     location:'',
+    windowWidth:null,
     info:[],
     securityLevel:0.5,
     jumps:5,
@@ -290,6 +310,13 @@ var app = new Vue({
     this.socket = io(this.domain);
   },
   computed:{
+    responsiveSize:function(){
+      var ret = "";
+      if(this.windowWidth<576){
+        ret = "sm"
+      }
+      return ret;
+    },
     tags:function(){
       var ret = [];
       for (let i=0;i<this.materialsSelected.length;i++){
@@ -324,6 +351,9 @@ var app = new Vue({
     },
   },
   methods:{
+    onWidthChange:function(width){
+      this.windowWidth = width;
+    },
     onSearchChange:function(search,opt){
       var data = {data:search,opt:opt};
       var self = this;
@@ -407,38 +437,6 @@ font-size: 2em;
 {
   .font-responsive-vw{
 font-size: 3em;
-  }
-  }
-
-.input-font
-{
-font-size: small;
-}
-
-/*sm*/
-@media screen and (min-width: 576px) { 
-  .input-font{
-font-size: initial;
-  }
-  }
-
-/*md*/
-@media screen and (min-width: 768px) { 
-  .input-font{
-    font-size: initial;
-  }
-  }
-
-/*lg*/
-@media screen and (min-width: 992px) { 
-  .input-font{
-    font-size: initial;
-  }
-  }
-/*xl*/
-@media screen and (min-width: 1200px){
-  .input-font{
-    font-size: initial;
   }
   }
 
