@@ -1,8 +1,6 @@
-nginx_conf_443 ='''
+nginx_conf_443 ='''worker_processes auto;
 
-worker_processes auto;
-
-error_log /nginx_tmp/error.log;
+error_log /tmp/error.log;;
 
 events {
 
@@ -10,15 +8,15 @@ events {
 
 }
 
-pid /nginx_tmp/nginx.pid;
+pid /tmp/nginx.pid;
 
 http {
 
-  client_body_temp_path /nginx_tmp/client_body;
-  fastcgi_temp_path /nginx_tmp/fastcgi;
-  proxy_temp_path /nginx_tmp/proxy;
-  scgi_temp_path /nginx_tmp/scgi;
-  uwsgi_temp_path /nginx_tmp/uwsgi;
+    client_body_temp_path /tmp/client_temp;
+    proxy_temp_path       /tmp/proxy_temp_path;
+    fastcgi_temp_path     /tmp/fastcgi_temp;
+    uwsgi_temp_path       /tmp/uwsgi_temp;
+    scgi_temp_path        /tmp/scgi_temp;
 
     server {
         # Port HTTPS
