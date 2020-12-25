@@ -295,7 +295,7 @@ var app = new Vue({
     domain:JSON.parse(document.querySelector('meta[name="domainUrl"]').getAttribute('content')),
     location:'',
     windowWidth:window.innerWidth,
-    responsiveSize:window.innerWidth&&"sm"||"",
+    responsiveSize:(window.innerWidth<576)&&"sm"||"",
     info:[],
     securityLevel:0.5,
     jumps:5,
