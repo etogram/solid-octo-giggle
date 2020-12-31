@@ -23,7 +23,7 @@ const app = express()
 const port = 3000
 
 //sentry
-/*
+
 Sentry.init({
   dsn: "https://927a995e46d54904a006f03bb96aee77@o145223.ingest.sentry.io/5564130",
   integrations: [
@@ -50,7 +50,7 @@ app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
 // the rest of your app
 app.use(Sentry.Handlers.errorHandler());
-*/
+
 //morgan
 var winston = require('./utils/logger');
 
