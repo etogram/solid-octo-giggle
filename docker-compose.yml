@@ -19,7 +19,7 @@ services:
     env_file:
       - config/env/express/env_${TAG}
     working_dir: /node_project/app
-    command: bash -c "node waiting.js && node initDb.js && npm start"
+    command: bash -c "npm install && node waiting.js && node initDb.js && npm start"
     volumes:
       - ./node_project:/node_project
     depends_on:
