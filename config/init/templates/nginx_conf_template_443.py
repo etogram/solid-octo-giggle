@@ -63,7 +63,31 @@ http {
             keepalive_timeout 65;
         }
 
-
+        location /css {
+            alias /node_project/app/frontend/dist/css;
+            gzip  on;# On active la compression
+            gzip_http_version 1.0;
+            gzip_vary on;
+            gzip_comp_level 6;
+            gzip_proxied any;
+            gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+            gzip_buffers 16 8k;
+            gzip_disable ~@~\MSIE [1-6].(?!.*SV1)~@~];# Sauf pour les vieux nav
+            expires 7d;#Mettre en cache pour 7 jours
+        }
+        location /js {
+            alias /node_project/app/frontend/dist/js;
+            gzip  on;# On active la compression
+            gzip_http_version 1.0;
+            gzip_vary on;
+            gzip_comp_level 6;
+            gzip_proxied any;
+            gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+            gzip_buffers 16 8k;
+            gzip_disable ~@~\MSIE [1-6].(?!.*SV1)~@~];# Sauf pour les vieux nav
+            expires 7d;#Mettre en cache pour 7 jours
+        }
+        
         location /socket.io {
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
