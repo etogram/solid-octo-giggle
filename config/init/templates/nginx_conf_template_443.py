@@ -54,10 +54,14 @@ http {
 
         client_max_body_size 1M;   # adjust to taste
 
-        location /static { 
+        location /favicons/ {
+            alias /node_project/app/frontend/dist/favicons/;
+            sendfile           on;
+            sendfile_max_chunk 1m;
+            tcp_nopush on;
+            tcp_nodelay on;
+            keepalive_timeout 65;
         }
-
-
 
 
         location /socket.io {

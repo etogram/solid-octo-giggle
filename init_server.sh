@@ -17,11 +17,10 @@ fi
 echo "Beginning server init"
 
 echo "1. adapt env file to the server"
-echo "node_projet/app/.env"
+echo ".env"
 echo "check your env file"
-echo "env file content"
 echo ">>>>>>>>>>>>>>>>"
-cat node_project/app/.env
+cat .env
 echo "<<<<<<<<<<<<<<<<"
 echo "if your env file is ok then continue..."
 echo -n "Continue (Y/n)? "
@@ -84,3 +83,13 @@ echo "4. install docker-compose if needed"
     echo "check docker-compose"
     docker-compose --version
 }
+
+
+echo "5. open a new console..."
+echo ">crontab -e"
+echo "add this line at the end"
+echo '0 0 * * * docker run -it --rm --name certbot -v "/etc/letsencrypt/live:/etc/letsencrypt/live" -v "/var/lib/letsencrypt:/var/lib/letsencrypt" -p 80:80 certbot/certbot renew'
+echo "renewval certbot in crontab"
+
+echo "6. to run your stack"
+echo "docker-compose up --build --remove-orphans"

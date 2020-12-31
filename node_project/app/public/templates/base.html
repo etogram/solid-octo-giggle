@@ -39,7 +39,7 @@
     <div class="row mt-3">
         <h1 class="mx-auto title-font-responsive-vw">EVE echoes planetary production finder</h1>
     </div>
-    
+<p>sessionID={{sessionId}}</p>    
     <div class="row">
 
       <autofill :items="autofillItems" v-on:input="onSearchChange" v-on:window-width-change="onWidthChange" v-on:search-set="onSearchSet" v-on:reset="onSearchReset" v-on:search-opt="onSearchOptChange"></autofill>
@@ -91,7 +91,6 @@
 
 
 Vue.component('tags', {
-  delimiters: ['${', '}'],
   props: ['tags'],
   data: function () {
     return {
@@ -307,7 +306,25 @@ var app = new Vue({
   },
   mounted:function(){
     console.log('mounted');
-    this.socket = io(this.domain);
+    this.socket = io(this.domain,{
+  transportOptions: {
+    polling: {
+      extraHeaders: {
+        'x-sessionid': '{{sessionId}}',
+        'x-token':'{{token}}'
+      }
+    }
+  }
+});
+
+this.socket.on('connect_error', (error) => {
+  console.log('connect_error')
+  console.log(error)
+});
+    this.socket.on('greetings', (msg) => {
+      console.log(msg)
+    });
+
   },
   computed:{
     tags:function(){

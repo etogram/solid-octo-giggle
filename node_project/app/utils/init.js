@@ -5,7 +5,6 @@ const sql = require('./sql')
 /*
 ne pas oublier de rajouter ca a l init pour l instant
 alter table planets add richness_order numeric;
-
 UPDATE planets
 SET richness_order =  case
     when richness = 'Perfect' then 1
@@ -16,6 +15,7 @@ SET richness_order =  case
 
 */
 
+
 const initDB =  async function(){
     logger.info('drop tables systems and planets');
     await sql.dump();
@@ -23,6 +23,9 @@ const initDB =  async function(){
     await sql.create();
     logger.info('insert data in table systems');
     await sql.insertSystems();
+    logger.info('alter and update');
+    await sql.alter();
+    await sql.update();
     logger.info('checking data');
     var row = await sql.count();
     if (row == '4512'){

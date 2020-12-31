@@ -1,0 +1,4 @@
+app_host=express
+app_port=3000
+root=/node_project/app
+domain=http://127.0.0.1:80

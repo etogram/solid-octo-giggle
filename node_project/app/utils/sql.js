@@ -108,13 +108,42 @@ console.log(data.length)
     logger.info(count)
 }
 
+const alter = async function(){
+    var row = 0;
+    try{   
+        row = await db.query('alter table planets add richness_order numeric;', [], (err, res) => {
+            if (err) {
+              logger.info(err)
+            }
+            logger.info(row)
+        })
+    }
+    catch(error){logger.info(error);}
+    return row;
+}
+
+const update = async function(){
+    var row = 0;
+    try{   
+        row = await db.query('UPDATE planets SET richness_order = case when richness = "Perfect" then 1 when richness = "Rich" then 0.75 when richness = "Medium" then 0.5 when richness = "Poor" then 0.25 end ;', [], (err, res) => {
+            if (err) {
+              logger.info(err)
+            }
+            logger.info(row)
+        })
+    }
+    catch(error){logger.info(error);}
+    return row;
+}
+
 
 module.exports.count = count;
 module.exports.countMaterials = countMaterials;
 module.exports.dump = dump;
 module.exports.create = create;
 module.exports.insertSystems = insertSystems;
-
+module.exports.alter = alter;
+module.exports.update = update;
 
 
 /*

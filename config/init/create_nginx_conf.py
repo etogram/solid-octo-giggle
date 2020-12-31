@@ -17,6 +17,7 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(stream_handler)
 logger.setLevel(logging.DEBUG)
 
+#mettre le env dev ou prod here
 context_production_443 = {
         "app_host":"express",
         "app_port":"3000",
@@ -31,9 +32,10 @@ context_development_80 = {
         "domain":"127.0.0.1",
     }
 
-env_file = os.path.join(base_path,"node_project","app",".env")
 
-def get_env():
+
+
+def get_env(env_file):
     env_dict = {}
     with open(env_file,"r") as f:
         for line in f:
@@ -44,22 +46,22 @@ def get_env():
                 pass
     return env_dict
 
-env_dict = get_env()
+base_env_file = os.path.join(base_path,".env")
+dev_or_prod = get_env(base_env_file)
+
+if dev_or_prod['TAG']=='dev':
+    logger.info("------ development mode ------")
+    nginx_conf_template = nginx_conf_80 
+    env_file = os.path.join(base_path,"config","env","nginx","env_dev")
+
+if dev_or_prod['TAG']=='prod':
+    logger.info("------ production mode ------")
+    nginx_conf_template = nginx_conf_443 
+    env_file = os.path.join(base_path,"config","env","nginx","env_prod")
 
 nginx_conf_file = os.path.join(base_path,"nginx","nginx.conf")
-
-if env_dict["NODE_ENV"] == "production":
-    logger.info("------ production mode ------")
-    nginx_conf_file_template = os.path.join(base_path,"config","init","template","nginx_conf_template_443")
-    t = Templite(nginx_conf_443,{})
-    nginx_conf = t.render(context_production_443)
-    with open(nginx_conf_file,"w") as f:
-        f.write(nginx_conf)
-
-if env_dict["NODE_ENV"] == "development":
-    logger.info("------ development mode ------")
-    t = Templite(nginx_conf_80,{})
-    nginx_conf = t.render(context_development_80)
-    with open(nginx_conf_file,"w") as f:
-        f.write(nginx_conf)
-
+t = Templite(nginx_conf_template,{})
+logger.info(get_env(env_file))
+nginx_conf = t.render(get_env(env_file))
+with open(nginx_conf_file,"w") as f:
+    f.write(nginx_conf)

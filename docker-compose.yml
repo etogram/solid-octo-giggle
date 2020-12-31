@@ -16,10 +16,19 @@ services:
       context: ./node_project
     container_name: express
     hostname: express
+    env_file:
+      - config/env/express/env_${TAG}
     working_dir: /node_project/app
-    command: bash -c 'npm install && npm start'
+    command: bash -c "node waiting.js && node initDb.js && npm start"
     volumes:
       - ./node_project:/node_project
+    depends_on:
+      - db
+    healthcheck:
+      test: ["CMD-SHELL", "node healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     networks:
       - frontend
       - backend
@@ -28,8 +37,8 @@ services:
     container_name: db
     restart: always
     hostname: db
-    environment:
-      - POSTGRES_PASSWORD=mysecretpassword
+    env_file:
+      - config/env/postgres/env_${TAG}
     volumes:
       - ./config/postgres:/docker-entrypoint-initdb.d
       - ./config/postgres/data:/var/lib/postgresql/data
@@ -46,13 +55,18 @@ services:
     hostname: nginx
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./node_project/app:/node_project/app:ro
+      - ./node_project/app:/node_project/app
       - /etc/letsencrypt:/etc/letsencrypt:ro
     ports:
       - 80:80
       - 443:443
     depends_on:
-      - express
+      - express   
+    healthcheck:
+      test: ["CMD","curl", "http://express:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     networks:
       - frontend
 networks:

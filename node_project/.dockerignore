@@ -1,0 +1,4 @@
+vue_project
+node_modules
+.log
+node_project/app/frontend/node_modules

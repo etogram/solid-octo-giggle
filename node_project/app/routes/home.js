@@ -39,7 +39,7 @@ router.get('/',cors(corsOptions),csrfProtection, async (req, res) => {
     csrfToken: req.csrfToken(),
     materialsOpt:JSON.stringify(materialsOpt)}
     
-    res.render('base.html',context )
+    res.render('index.html',{} )
 
     })
 
